@@ -1,31 +1,26 @@
-import Head from "next/head";
-import Link from "next/link";
+import MeetupList from "@/components/meetups/MeetupList";
 
-import styled from "styled-components";
+const DUMMY = [
+  {
+    id: "m1",
+    title: "A First Meetup",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/4/42/Canals_of_Amsterdam_-_Jordaan_area.jpg",
+    address: "서울시 강남구",
+    description: "This is a first meetup!",
+  },
+  {
+    id: "m2",
+    title: "A Second Meetup",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/4/42/Canals_of_Amsterdam_-_Jordaan_area.jpg",
+    address: "서울시 광진구",
+    description: "This is a second meetup!",
+  },
+];
 
-export default function Home() {
-  // This creates a custom component that wraps an <a> tag
-  const RedLink = styled.a`
-    color: red;
-  `;
-
-  return (
-    <>
-      <Head>
-        <title>NextJS review</title>
-        <meta name="description" content="nextjs review" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        <h1>review</h1>
-        <Link href={"/news"}>news</Link>
-        <Link href="/news">
-          <button onClick={() => (window.location.href = "/about")}>
-            About Page
-          </button>
-        </Link>
-      </main>
-    </>
-  );
+function HomePage() {
+  return <MeetupList meetups={DUMMY} />;
 }
+
+export default HomePage;
