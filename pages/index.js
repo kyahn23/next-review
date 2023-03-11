@@ -1,5 +1,5 @@
-import Layout from "@/components/layout/Layout";
 import MeetupList from "@/components/meetups/MeetupList";
+import { useEffect, useState } from "react";
 
 const DUMMY = [
   {
@@ -20,12 +20,30 @@ const DUMMY = [
   },
 ];
 
-function HomePage() {
-  return (
-    <Layout>
-      <MeetupList meetups={DUMMY} />
-    </Layout>
-  );
+function HomePage(props) {
+  // const [loadedMeetups, setLoadedMeetups] = useState([]);
+
+  // useEffect(() => {
+  //   setLoadedMeetups(DUMMY);
+  // }, []);
+  return <MeetupList meetups={props.meetups} />;
+}
+
+// export async function getStaticProps() {
+//   return {
+//     props: {
+//       meetups: DUMMY,
+//     },
+//     revalidate: 10,
+//   };
+// }
+
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      meetups: DUMMY,
+    },
+  };
 }
 
 export default HomePage;
