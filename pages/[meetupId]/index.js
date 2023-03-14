@@ -1,40 +1,63 @@
 import MeetupDetail from "@/components/meetups/MeetupDetail";
+import { MongoClient, ObjectId } from "mongodb";
 
 function DetailPage(props) {
   return (
     <MeetupDetail
-      image="https://upload.wikimedia.org/wikipedia/commons/4/42/Canals_of_Amsterdam_-_Jordaan_area.jpg"
-      title="A First Meetup"
-      description="This is a first meetup!"
-      address="서울시 강남구"
+      image={props.meetupData.image}
+      title={props.meetupData.title}
+      description={props.meetupData.description}
+      address={props.meetupData.address}
     />
   );
 }
 
 export async function getStaticPaths() {
+  const client = await MongoClient.connect(
+    "mongodb+srv://kyahn:3j3IwKSAIYw6nj50@cluster0.7jehjja.mongodb.net/?retryWrites=true&w=majority"
+  );
+
+  const db = client.db("meetups");
+
+  const meetupsCollection = db.collection("meetups");
+  const idArr = await meetupsCollection.find({}, { _id: 1 }).toArray();
+  const ids = idArr.map((id) => ({ params: { meetupId: id._id.toString() } }));
+  client.close();
+
   return {
     fallback: false,
-    paths: [
-      { params: { meetupId: "m1" } },
-      { params: { meetupId: "m2" } },
-      { params: { meetupId: "m3" } },
-    ],
+    paths: ids,
   };
 }
 
 export async function getStaticProps(context) {
-  const meetupId = context.params.meetupId;
+  const { meetupId } = context.params;
+
+  const client = await MongoClient.connect(
+    "mongodb+srv://kyahn:3j3IwKSAIYw6nj50@cluster0.7jehjja.mongodb.net/?retryWrites=true&w=majority"
+  );
+
+  const db = client.db("meetups");
+
+  const meetupsCollection = db.collection("meetups");
+  const meetup = await meetupsCollection.findOne({
+    _id: new ObjectId(meetupId),
+  });
+
+  meetup._id = meetup._id.toString(); // _id 문자열 변환
+
+  // _id 값을 id로 추가하기
+  const { _id, ...abc } = meetup;
+  const selectedMeetup = {
+    ...abc,
+    id: _id,
+  };
+
+  client.close();
 
   return {
     props: {
-      meetupData: {
-        image:
-          "https://upload.wikimedia.org/wikipedia/commons/4/42/Canals_of_Amsterdam_-_Jordaan_area.jpg",
-        id: meetupId,
-        title: "A First Meetup",
-        description: "This is a first meetup!",
-        address: "서울시 강남구",
-      },
+      meetupData: selectedMeetup,
     },
   };
 }
